@@ -3,7 +3,7 @@
 ## Synopsis
 
 A streamlined setup for running **ComfyUI** with **HunyuanVideo** on high-performance hardware.  
-This pod downloads models as specified in the **environment variables** set in thr [RunPod.io template](https://runpod.io/console/deploy?template=gcg37htwu8&ref=se4tkc5o).  
+This pod downloads models as specified in the **environment variables** set in the [RunPod.io template](https://runpod.io/console/deploy?template=gcg37htwu8&ref=se4tkc5o).  
 
 - Models and loras are automatically downloaded based on the specified paths in the environment configuration.  
 - Authentication credentials can be set via secrets for:  
