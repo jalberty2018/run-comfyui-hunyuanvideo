@@ -182,7 +182,7 @@ nano    # Text Editor
 
 ## Building the Docker Image 
 
-This is possible on [runpod.io](https://runpod.io?ref=se4tkc5o) use local hardware.
+Not possible on [runpod.io](https://runpod.io?ref=se4tkc5o) use local hardware.
 You can build and push the image to Docker Hub using the `build-docker.py` script.
 
 ### `build-docker.py` script options
@@ -193,7 +193,7 @@ You can build and push the image to Docker Hub using the `build-docker.py` scrip
 | `--tag`        | Tag to use for the image                            | Today's date           |
 | `--latest`     | If specified, also tags and pushes as `latest`      | Not enabled by default |
 
-### Build & Push Command
+### Build & push Command
 
 Run the following command to clone the repository and build the image:
 
