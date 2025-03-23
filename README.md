@@ -122,7 +122,6 @@ docker pull ls250824/run-comfyui-hunyuanvideo:19032025
 - [Frame Interpolation](https://github.com/Fannovel16/ComfyUI-Frame-Interpolation)  
 - [HunyuanLoom](https://github.com/logtd/ComfyUI-HunyuanLoom)  
 - [Python Extension](https://github.com/pydn/ComfyUI-to-Python-Extension)  
-- [Save Image Extended](https://github.com/audioscavenger/save-image-extended-comfyui)  
 
 ## Models
 

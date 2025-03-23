@@ -12,6 +12,17 @@ This project downloads models as specified in the **environment variables** set 
 Ensure that the required environment variables and secrets are correctly set before running the pod.
 See below for options.
 
+## Hardware Requirements  
+ 
+- **Recommended GPUs**: L40S, L40, RTX 6000 Ada  
+- **Storage**:  
+  - **Volume**: 75GB (`/workspace`)  
+  - **Pod Volume**: 10GB  
+
+## Template [RunPod.io](https://runpod.io?ref=se4tkc5o)
+
+- [template](https://runpod.io/console/deploy?template=gcg37htwu8&ref=se4tkc5o)
+
 ## Workflow
 
 - Example Text to video workflow using available custom nodes in /workspace/ComfyUI/user/default/workflows
@@ -42,15 +53,7 @@ See below for options.
 - [Frame Interpolation](https://github.com/Fannovel16/ComfyUI-Frame-Interpolation)  
 - [HunyuanLoom](https://github.com/logtd/ComfyUI-HunyuanLoom)  
 - [Python Extension](https://github.com/pydn/ComfyUI-to-Python-Extension)  
-- [Save Image Extended](https://github.com/audioscavenger/save-image-extended-comfyui) 
 
-## Hardware Requirements  
-
-- **Recommended GPUs**: L40S, L40, RTX 6000 Ada  
-- **Storage**:  
-  - **Volume**: 75GB (`/workspace`)  
-  - **Pod Volume**: 10GB  
-  
 ## Environment Variables  
 
 ### **ComfyUI Arguments**  

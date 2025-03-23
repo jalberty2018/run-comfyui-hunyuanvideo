@@ -30,7 +30,6 @@ RUN pip3 install --no-cache-dir opencv-python diffusers && \
     git clone https://github.com/Fannovel16/ComfyUI-Frame-Interpolation.git && \
     git clone https://github.com/logtd/ComfyUI-HunyuanLoom.git && \
     git clone https://github.com/pydn/ComfyUI-to-Python-Extension.git && \
-    git clone https://github.com/audioscavenger/save-image-extended-comfyui.git
 
 # Install Dependencies for Cloned Repositories
 RUN pip3 install --no-cache-dir \
@@ -38,7 +37,6 @@ RUN pip3 install --no-cache-dir \
     -r /ComfyUI/custom_nodes/ComfyUI-Detail-Daemon/requirements.txt \
     -r /ComfyUI/custom_nodes/ComfyUI-VideoHelperSuite/requirements.txt \
     -r /ComfyUI/custom_nodes/ComfyUI-KJNodes/requirements.txt \
-    -r /ComfyUI/custom_nodes/save-image-extended-comfyui/requirements.txt
 
 # Set Workspace
 WORKDIR /workspace
