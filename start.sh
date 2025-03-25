@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "------ Pod run-comfyui-hunyuanvideo started ------"
+echo "[INFO] Pod run-comfyui-hunyuanvideo started"
 
 # Enable SSH if PUBLIC_KEY is set
 if [[ -n "$PUBLIC_KEY" ]]; then
@@ -93,7 +93,7 @@ download_model_HF HF_MODEL_DIFFUSION_MODELS HF_MODEL_DIFFUSION_MODELS_SAFETENSOR
 download_model_HF HF_MODEL_CHECKPOINTS HF_MODEL_CHECKPOINTS_SAFETENSORS "checkpoints"
 
 # Final message
-echo "------ Provisioning done end ------"
+echo "[INFO] Provisioning done end"
 
 # Keep the container running
 exec sleep infinity
