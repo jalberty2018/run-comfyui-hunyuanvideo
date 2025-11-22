@@ -1,4 +1,4 @@
-# Run Hunyuanvideo 1.x with ComfyUI with provisioning
+# Run Hunyuanvideo 1.x inference with ComfyUI and provisioning.
 
 ## Features
 
@@ -23,21 +23,44 @@
 
 - All available templates on runpod.io are tested on a L40S/A40.
 - Try to avoid regions US-TX-x as they often fail to download or run the image (Pytorch CUDA mismatch).
+- [Tutorial for deployment](https://awesome-comfyui.rozenlaan.site/ComfyUI_HY_deployment/)
 
 ### Runpod.io templates
 
+**One-Click Deployment links:**
+
+- 👉 [RunPod Hunyuanvideo 1.5 T2V](https://console.runpod.io/deploy?template=0rj9nvbx7n&ref=se4tkc5o)
+- 👉 [RunPod Hunyuanvideo 1.5 I2V](https://console.runpod.io/deploy?template=4jsbo737uq&ref=se4tkc5o)
+
 ### Workflows
+
+- Open from ComfyUI's interface on the left
+- Download from [examples](https://awesome-comfyui.rozenlaan.site/ComfyUI_workflows/)
 
 ## Full documentation
 
+- [Configurations](https://awesome-comfyui.rozenlaan.site/ComfyUI_HY/)
+- [Installed custom nodes](https://awesome-comfyui.rozenlaan.site/ComfyUI_HY_custom_nodes/)
+
 ## Hardware Requirements
 
-### Storage
+### T2V / I2V
 
-| Component        | Minimum                  |
-|------------------|--------------------------|
-| Volume Storage   | 90Gb (`/workspace`)      |
-| Pod Storage      | 15Gb                     |
+####  GPU
+
+- **Precision:** fp16  
+- **Video settings:** 1024×768, 100 frames
+
+| GPU | VRAM | RAM (Native |
+|------|-------|------------------------|
+| L40S, RTX 6000 Ada, L40, A40 | 45 GB | 50 GB |
+
+### Storage Requirements
+
+| Component | Minimum |
+|-----------|---------|
+| Volume Storage | 50 GB |
+| Pod Storage | 15 GB |
 
 ### **ComfyUI Arguments**  
 

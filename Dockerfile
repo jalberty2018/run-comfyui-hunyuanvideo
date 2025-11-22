@@ -40,7 +40,7 @@ RUN --mount=type=cache,target=/root/.cache/git \
 	git clone --depth=1 --filter=blob:none https://github.com/x3bits/ComfyUI-Power-Flow.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/9nate-drake/Comfyui-SecNodes.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/asdrabael/Hunyuan-Multi-Lora-Loader.git && \
-	git clone --depth=1 --fliter=blob:none https://github.com/Jonseed/ComfyUI-Detail-Daemon.git
+	git clone --depth=1 --filter=blob:none https://github.com/Jonseed/ComfyUI-Detail-Daemon.git
 
 # Rewrite any top-level CPU ORT refs to GPU ORT
 RUN set -eux; \

@@ -21,12 +21,13 @@
 
 - [t2v](provisioning/hf_hy15_t2v.md)
 - [i2v](provisioning/hf_hy15_i2v.md)
+- [sr](provisioning/hf_hy_sr.md)
 
 ### Others
 
 - [Segmentation](provisioning/hf_segmentation.md)
 - [Upscale](provisioning/hf_upscale.md)
-- [Video frame interpolation](provisioning_hf_vfi.md)
+- [vfi](provisioning_hf_vfi.md)
 
 #### **Huggingface**  
 

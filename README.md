@@ -2,7 +2,9 @@
 
 [![Docker Image Version](https://img.shields.io/docker/v/ls250824/run-comfyui-hunyuanvideo)](https://hub.docker.com/r/ls250824/run-comfyui-hunyuanvideo)
 
-A streamlined and automated environment for running **ComfyUI** with **WAN 2.x video models**, optimized for use on [RunPod.io](https://runpod.io?ref=se4tkc5o).
+A streamlined and automated environment for running **ComfyUI** with **Hunyuanvideo models**, optimized for use on [RunPod.io](https://runpod.io?ref=se4tkc5o).
+
+![Running on runpod.io](images/runpod.jpg)
 
 ## 🔧 Features
 
@@ -21,23 +23,39 @@ A streamlined and automated environment for running **ComfyUI** with **WAN 2.x v
 
 - All available templates on runpod.io are tested on a L40S/A40.
 - Try to avoid regions US-TX-x as they often fail to download or run the image (Pytorch CUDA mismatch).
+- Don't use pods with **no region id** ther are unreliable. 
 
 ### Runpod.io templates
 
+**One-Click Deployment links:**
+
+- 👉 [RunPod Hunyuanvideo 1.5 T2V](https://console.runpod.io/deploy?template=0rj9nvbx7n&ref=se4tkc5o)
+- 👉 [RunPod Hunyuanvideo 1.5 I2V](https://console.runpod.io/deploy?template=4jsbo737uq&ref=se4tkc5o)
+
 ### Workflows
+
+- Select from the right menu
+- [Download](https://awesome-comfyui.rozenlaan.site/ComfyUI_workflows/)
 
 ## 💻 Hardware Requirements
 
-### T2V-A14B or I2V-A14B (high/low) 
+### 🎞️ T2V / I2V
 
-#### **Recommended GPU**
+####  GPU
 
-### Storage
+- **Precision:** fp16  
+- **Video settings:** 1024×768, 100 frames
 
-| Component        | Minimum                  |
-|------------------|--------------------------|
-| Volume Storage   | 90Gb (`/workspace`)      |
-| Pod Storage      | 15Gb                     |
+| GPU | VRAM | RAM (Native |
+|------|-------|------------------------|
+| L40S, RTX 6000 Ada, L40, A40 | 45 GB | 50 GB |
+
+### 💾 Storage Requirements
+
+| Component | Minimum |
+|-----------|---------|
+| Volume Storage | 50 GB |
+| Pod Storage | 15 GB |
 
 ## 🐳 Docker Images
 
@@ -179,6 +197,7 @@ docker pull ls250824/run-comfyui-hunyuanvideo:<version>
 
 - [t2v](provisioning/hf_hy15_t2v.md)
 - [i2v](provisioning/hf_hy15_i2v.md)
+- [sr](provisioning/hf_hy_sr.md)
 
 ### Others
 

@@ -19,13 +19,6 @@ hf download  Comfy-Org/HunyuanVideo_1.5_repackaged split_files/diffusion_models/
 --local-dir /workspace/ComfyUI/models/diffusion_models/
 ```
 
-### Standard fp16 sr distilled 1080p
-
-```bash
-hf download Comfy-Org/HunyuanVideo_1.5_repackaged split_files/diffusion_models/hunyuanvideo1.5_1080p_sr_distilled_fp16.safetensors \
---local-dir /workspace/ComfyUI/models/diffusion_models/
-```
-
 ## CLIP Text encoder
 
 ### fp16
