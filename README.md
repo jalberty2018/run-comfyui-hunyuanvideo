@@ -1,208 +1,240 @@
-# Run ComfyUI HunyuanVideo with Custom nodes on [RunPod.io](https://runpod.io?ref=se4tkc5o)
+# 🚀 Run Hunyuanvideo 1.x with ComfyUI with provisioning — [RunPod.io Deployment](https://runpod.io?ref=se4tkc5o)
 
-## Synopsis
+[![Docker Image Version](https://img.shields.io/docker/v/ls250824/run-comfyui-hunyuanvideo)](https://hub.docker.com/r/ls250824/run-comfyui-hunyuanvideo)
 
-A streamlined setup for running **ComfyUI** with **HunyuanVideo** on high-performance hardware.  
-This pod downloads models as specified in the **environment variables** set in the [RunPod.io template](https://runpod.io/console/deploy?template=gcg37htwu8&ref=se4tkc5o).  
+A streamlined and automated environment for running **ComfyUI** with **WAN 2.x video models**, optimized for use on [RunPod.io](https://runpod.io?ref=se4tkc5o).
 
-- Models and loras are automatically downloaded based on the specified paths in the environment configuration.  
-- Authentication credentials can be set via secrets for:  
-  - **Code server** authentication (not possible to switch off) 
-  - **Hugging Face** and **CivitAI** tokens for model access.  
+## 🔧 Features
 
-Ensure that the required environment variables and secrets are correctly set before running the pod.
-See below for options.
+- Automatic model and LoRA downloads via environment variables.
+- Built-in **authentication** for:
+  - ComfyUI
+  - Code Server
+  - Hugging Face API
+  - CivitAI API
+- Supports advanced workflows for **video generation** and **enhancement** using pre-installed custom nodes.
+- Compatible with high-performance NVIDIA GPUs.
 
-## Pod running on [RunPod.io](https://runpod.io?ref=se4tkc5o)
+## Template Deployment
 
-![Pod running](images/runpod-pod.jpg)
+### Deployment & Tutorial.
 
-## Hardware Requirements  
- 
-- **Recommended GPUs**: L40S, L40, RTX 6000 Ada  
-- **Storage**:  
-  - **Volume**: 75GB (`/workspace`)  
-  - **Pod Volume**: 10GB  
+- All available templates on runpod.io are tested on a L40S/A40.
+- Try to avoid regions US-TX-x as they often fail to download or run the image (Pytorch CUDA mismatch).
 
-## Template [RunPod.io](https://runpod.io?ref=se4tkc5o)
+### Runpod.io templates
 
-- [template](https://runpod.io/console/deploy?template=gcg37htwu8&ref=se4tkc5o)
+### Workflows
 
-## Available Images
+## 💻 Hardware Requirements
 
-### Image
+### T2V-A14B or I2V-A14B (high/low) 
 
-Base Image: ls250824/comfyui-runtime:17032025
+#### **Recommended GPU**
 
-#### Custom Build: 
+### Storage
+
+| Component        | Minimum                  |
+|------------------|--------------------------|
+| Volume Storage   | 90Gb (`/workspace`)      |
+| Pod Storage      | 15Gb                     |
+
+## 🐳 Docker Images
+
+### Base Images
+
+- **PyTorch Runtime**  [![Docker](https://img.shields.io/docker/v/ls250824/pytorch-cuda-ubuntu-runtime)](https://hub.docker.com/r/ls250824/pytorch-cuda-ubuntu-runtime)
+
+- **ComfyUI Runtime**  [![Docker](https://img.shields.io/docker/v/ls250824/comfyui-runtime)](https://hub.docker.com/r/ls250824/comfyui-runtime)
+
+### Custom Image
 
 ```bash
-docker pull ls250824/run-comfyui-hunyuanvideo:19032025
+docker pull ls250824/run-comfyui-hunyuanvideo:<version>
 ```
 
-## Environment Variables  
+## ⚙️ Environment Variables
 
-### **ComfyUI Arguments**  
+### ComfyUI Configuration
 
-| Token        | Environment Variable     |
-|--------------|--------------------------|
-| Arguments    | `COMFYUI_EXTRA_ARGUMENTS`|
+| Variable                   | Description                    |
+|----------------------------|--------------------------------|
+| `COMFYUI_EXTRA_ARGUMENTS`  | Additional arguments for ComfyUI CLI |
 
-### **Authentication Tokens**  
 
-| Token        | Environment Variable |
-|--------------|----------------------|
-| Civitai      | `CIVITAI_TOKEN`      |
-| Huggingface  | `HF_TOKEN`           |
-| Code Server  | `PASSWORD`           |
+### Authentication Tokens
 
-### **Diffusion Models Setup Huggingface**  
+| Token Source   | Variable         | 
+|----------------|------------------|
+| Code Server    | `PASSWORD`       | 
+| Hugging Face   | `HF_TOKEN`       | 
+| CivitAI        | `CIVITAI_TOKEN`  | 
 
-| Model Type        | Model                         | Safetensors                               |
+### Huggingface ComfyUI Model Configuration
+
+| Model Type        | Model                         | Safetensors/GGUF                               |
 |-------------------|-------------------------------|-------------------------------------------| 
-| Diffusion Model   | `HF_MODEL_DIFFUSION`          | `HF_MODEL_DIFFUSION_MODELS_SAFETENSORS`   |
-| Checkpoints       | `HF_MODEL_CHECKPOINTS`        | `HF_MODEL_CHECKPOINTS_SAFETENSORS`        |
-| Text Encoders     | `HF_MODEL_TEXT_ENCODERS[1-2]` | `HF_MODEL_TEXT_ENCODERS_SAFETENSORS[1-2]` |
-| VAE               | `HF_MODEL_VAE`                | `HF_MODEL_VAE_SAFETENSORS`                |
-| Upscalers         | `HF_MODEL_UPSCALER[1-2]`      | `HF_MODEL_UPSCALER_PTH[1-2]`              |
-| Loras huggingface | `HF_MODEL_LORA[1-4]`          | `HF_MODEL_LORA_SAFETENSORS[1-4]`          |
+| Diffusion Model   | `HF_MODEL_DIFFUSION_MODELS[1-20]`          | `HF_MODEL_DIFFUSION_MODELS_FILENAME[1-20]`   |
+| Checkpoints       | `HF_MODEL_CHECKPOINTS[1-20]`        | `HF_MODEL_CHECKPOINTS_FILENAME[1-20]`        |
+| Text Encoders     | `HF_MODEL_TEXT_ENCODERS[1-20]` | `HF_MODEL_TEXT_ENCODERS_FILENAME[1-20]` |
+| Clip Vision       | `HF_MODEL_CLIP_VISION[1-20]`        | `HF_MODEL_CLIP_VISION_FILENAME[1-20]` |
+| Audio Encoders    | `HF_MODEL_AUDIO_ENCODERS[1-20]` | `HF_MODEL_AUDIO_ENCODERS_FILENAME[1-20]` |
+| Model patches    | `HF_MODEL_PATCHES[1-20]` | `HF_MODEL_PATCHES_FILENAME[1-20]` |
+| VAE               | `HF_MODEL_VAE[1-20]`                | `HF_MODEL_VAE_FILENAME[1-20]`                |
+| Upscalers         | `HF_MODEL_UPSCALER[1-20]`      | `HF_MODEL_UPSCALER_PTH[1-20]`              |
+| Loras          | `HF_MODEL_LORA[1-20]`          | `HF_MODEL_LORA_FILENAME[1-20]`          |
+| VLM/mmproj    | `HF_MODEL_VL[1-20]`          | `HF_MODEL_VL_FILENAME[1-20]`          |
+| SAM segmentation | `HF_MODEL_SAMS[1-20]`          | `HF_MODEL_SAMS_FILENAME[1-20]`          |
 
-### **Diffusion Lora Setup CivitAI**  
+### Huggingface model configuration
 
-| Model Type        | URL (download link)           |
-|-------------------|-------------------------------|
-| Loras civitai     | `CIVITAI_MODEL_LORA_URL[1-4]` |
+| Type  | Model     | Safetensors/GGUF |  /workspace/ComfyUI/<Directory> |
+|-------|-----------|------------------|---------------------------------|  
+| File  | `HF_MODEL[1-20]`  | `HF_MODEL_FILENAME[1-20]`   | `HF_MODEL_DIR[1-20]` |
+| Dir   | `HF_FULL_MODEL[1-20]`  |   | `HF_FULL_MODEL_DIR[1-20]` |
 
-## Connection options 
+### CivitAI LORAs
 
-### Services
+| Variable                         | Description                      |
+|----------------------------------|----------------------------------|
+| `CIVITAI_MODEL_LORA_URL[1-50]`   | Direct download link for LoRAs |
 
-| Service         | Port          |
-|-----------------|---------------| 
-| **ComfyUI**     | `8188` (HTTP) |
-| **Code Server** | `9000` (HTTP) |
-| **SSH/SCP**     | `22`   (TCP)  |
- 
-## Workflows & Tutorials  
 
-- [OpenArt.ai](https://openart.ai/workflows/home?keyword=Hunyuanvideo)  
-- [CivitAI Guide](https://civitai.com/articles/9584/tips-hunyuan-the-bomb-you-are-sleeping-on-rn)  
-- [Enhance a Video](https://oahzxl.github.io/Enhance_A_Video/)  
-- [ComfyUI Examples](https://comfyanonymous.github.io/ComfyUI_examples/hunyuan_video/)
+### Workflows
 
-## Workflow
+| Variable         | Description                      |
+|------------------|----------------------------------|
+| `WORKFLOW[1-50]` |  download link (compressed or plain)  |
 
-- Example Text to video workflow using available custom nodes in /workspace/ComfyUI/user/default/workflows
-- Open workflow from ComfyUI's interface on the left. 
+## 🌐 Network Services
 
-![Pod running ComfyUI workflow](images/runpod-comfyui.jpg)
+| Service       | Port   | Access Type |
+|---------------|--------|-------------|
+| ComfyUI       | `8188` | Web         |
+| Code Server   | `9000` | Web         |
+| SSH/SCP       | `22`   | Terminal    |
 
-## Software Repositories  
+## 📚 Tutorials & Resources
 
-### Core  
+- [Hunyuanvideo 1.5 Github](https://github.com/Tencent-Hunyuan/HunyuanVideo-1.5)
 
-- [ComfyUI](https://github.com/comfyanonymous/ComfyUI)  
-- [Code Server](https://github.com/coder/code-server)  
-- [HuggingFace CLI Guide](https://huggingface.co/docs/huggingface_hub/v0.27.0/guides/cli) 
+## 🧩 Pre-Installed Custom Nodes
 
-### Custom Nodes ComfyUI 
+### Interface
 
 - [rgthree](https://github.com/rgthree/rgthree-comfy)  
 - [Login](https://github.com/liusida/ComfyUI-Login)  
-- [Manager](https://github.com/ltdrdata/ComfyUI-Manager)  
-- [Noise Tools](https://github.com/chrisgoringe/cg-noisetools)  
-- [Noise](https://github.com/BlenderNeko/ComfyUI_Noise)  
-- [Video Helper Suite](https://github.com/kosinkadink/ComfyUI-VideoHelperSuite)  
+- [Manager](https://github.com/ltdrdata/ComfyUI-Manager)
 - [KJNodes](https://github.com/kijai/ComfyUI-KJNodes)  
-- [MultiLora Loader](https://github.com/asdrabael/Hunyuan-Multi-Lora-Loader)  
-- [TeaSampler](https://github.com/facok/ComfyUI-TeaCacheHunyuanVideo)  
-- [Detail Daemon](https://github.com/Jonseed/ComfyUI-Detail-Daemon)  
-- [Unload Models](https://github.com/SeanScripts/ComfyUI-Unload-Model)  
-- [Free Memory](https://github.com/ShmuelRonen/ComfyUI-FreeMemory)  
-- [Frame Interpolation](https://github.com/Fannovel16/ComfyUI-Frame-Interpolation)  
-- [HunyuanLoom](https://github.com/logtd/ComfyUI-HunyuanLoom)  
-- [Python Extension](https://github.com/pydn/ComfyUI-to-Python-Extension)  
+- [GGUF](https://github.com/city96/ComfyUI-GGUF)
+- [ComfyMath](https://github.com/evanspearman/ComfyMath.git)
+- [Resolution master](https://github.com/Azornes/Comfyui-Resolution-Master.git)
+- [PG Nodes](https://github.com/GizmoR13/PG-Nodes)
+- [ComfyUi-Scale-Image-to-Total-Pixels-Advanced](https://github.com/BigStationW/ComfyUi-Scale-Image-to-Total-Pixels-Advanced)
 
-## Models
+### Video/Upscale
 
-### Sources  
+- [Video Helper Suite](https://github.com/kosinkadink/ComfyUI-VideoHelperSuite)
+- [Frame Interpolation](https://github.com/Fannovel16/ComfyUI-Frame-Interpolation)
+- [VideoUpscale with Model](https://github.com/ShmuelRonen/ComfyUI-VideoUpscale_WithModel)
+- [SD Upscale](https://github.com/ssitu/ComfyUI_UltimateSDUpscale)
+- [VRgamedevgirl](https://github.com/vrgamegirl19/comfyui-vrgamedevgirl)
 
-- [Tencent HunyuanVideo GitHub](https://github.com/Tencent/HunyuanVideo)
-- [Tencent HunyuanVideo](https://huggingface.co/tencent/HunyuanVideo)  
-- [Kijai HunyuanVideo](https://huggingface.co/Kijai/HunyuanVideo_comfy)  
-- [Comfy-Org HunyuanVideo](https://huggingface.co/Comfy-Org/HunyuanVideo_repackaged)
-- [CivitAI HunyuanVideo](https://civitai.com/models/1167575?modelVersionId=1314397)  
+### Controlnet
 
-### Manual provisioning
+- [controlnet_aux](https://github.com/Fannovel16/comfyui_controlnet_aux)
 
-- [Script](provisioning/huggingface_HunyuanVideo.md)
+### Flow
 
-#### **Huggingface**  
+- [Power Flow](https://github.com/x3bits/ComfyUI-Power-Flow)
 
-```bash
-huggingface-cli download model model_name.safetensors --local-dir /workspace/ComfyUI/models/diffusion_models/
-huggingface-cli upload model /workspace/model.safetensors
-```
+### Segmentation
 
-#### **CivitAI**  
+- [Segment anything](https://github.com/kijai/ComfyUI-segment-anything-2)
+- [RMBG](https://github.com/1038lab/ComfyUI-RMBG)
+- [SecNodes](https://github.com/9nate-drake/Comfyui-SecNodes)
 
-```bash
-civitai "<download link>" /workspace/ComfyUI/models/diffusion_models
-civitai "<download link>" /workspace/ComfyUI/models/loras
-```
-## 7z Compression  
+### Sampling
 
-### **Encrypt & Archive Output**  
+- [RES4LYF](https://github.com/ClownsharkBatwing/RES4LYF)
+- [Noise](https://github.com/BlenderNeko/ComfyUI_Noise)
+- [Was affine](https://github.com/WASasquatch/was_affine)
 
-```bash
-7z a -p -mhe=on /workspace/output/output-hunyuanvideo-x.7z /workspace/ComfyUI/output/
-```
+## 🧩 All possible Custom Nodes
 
-### **Extract Archive**  
+- [Full List](https://awesome-comfyui.rozenlaan.site)
 
-```bash
-7z x x.7z
-```
+## 📦 Model Sources
 
-## **Clean Up**  
+- [ComfyUI](https://huggingface.co/Comfy-Org/HunyuanVideo_1.5_repackaged/tree/main/split_files)
+- [Lightning lightx2v](https://huggingface.co/lightx2v/Hy1.5-Quantized-Models/tree/main)
 
-```bash
-rm -rf /workspace/output/ /workspace/ComfyUI/output/ /workspace/ComfyUI/models/
-```
+## 📦 Manual setup guides:
 
-## Utilities  
+### 1.0
 
-```bash
-nvtop   # GPU Monitoring  
-htop    # Process Monitoring  
-mc      # Midnight Commander  
-nano    # Text Editor  
-```
+- [Provisioning](provisioning/hf_hy10.md)
 
-## Building the Docker Image 
+### 1.5
 
-Not possible on [runpod.io](https://runpod.io?ref=se4tkc5o) use local hardware.
-You can build and push the image to Docker Hub using the `build-docker.py` script.
+- [t2v](provisioning/hf_hy15_t2v.md)
+- [i2v](provisioning/hf_hy15_i2v.md)
 
-### `build-docker.py` script options
+### Others
 
-| Option         | Description                                         | Default                |
-|----------------|-----------------------------------------------------|------------------------|
-| `--username`   | Docker Hub username                                 | Current user           |
-| `--tag`        | Tag to use for the image                            | Today's date           |
-| `--latest`     | If specified, also tags and pushes as `latest`      | Not enabled by default |
+- [Segmentation](provisioning/hf_segmentation.md)
+- [Upscale](provisioning/hf_upscale.md)
+- [Video frame interpolation](provisioning_hf_vfi.md)
 
-### Build & push Command
+## ⚙️ Setup latest image
 
-Run the following command to clone the repository and build the image:
+| Component | Version              |
+|-----------|----------------------|
+| OS        | `Ubuntu 22.04 x86_64`|
+| Python    | `3.11.x`             |
+| PyTorch   | `2.9.1`              |
+| CUDA      | `12.8.x`             |
+| Triton    | `3.5.1`              |
+| onnxruntime-gpu | `1.22.x` |
+| ComfyUI | `0.3.71` |
+| Code Server | Latest |
+
+## ⚙️ Installed Attentions latest image
+
+### Wheels
+
+| Package        | Version  |
+|----------------|----------|
+| flash_attn     | `2.8.3`    |
+| sageattention  | `2.2.0`    |
+
+### Build for
+
+| Processor | Compute Capability | SM |
+|------------|-----------------|-----------|
+| A40  | `8.6` | `sm_86` |
+| L40S | `8.9` | `sm_89` |
+
+## 🛠️ Build & Push Docker Image (Optional)
+
+Use none docker setup to build the image using the included Python script.
+
+### Build Script: `build-docker.py`
+
+| Argument       | Description                        | Default          |
+|----------------|------------------------------------|------------------|
+| `--username`   | Your Docker Hub username           | Current user     |
+| `--tag`        | Custom image tag                   | Today's date     |
+| `--latest`     | Also tag image as `latest`         | Disabled         |
+
+### Example Usage
 
 ```bash
 git clone https://github.com/jalberty2018/run-comfyui-hunyuanvideo.git
+cp ./run-comfyui-hunyuanvideo/build-docker.py ..
 
-python3 run-comfyui-hunyuanvideo/build-docker.py \
---username=<your_dockerhub_username> \
---tag=<custom_tag> \ 
-run-comfyui-hunyuanvideo
+export DOCKER_BUILDKIT=1
+export COMPOSE_DOCKER_CLI_BUILD=1
+
+python3 build-docker.py   --username=<your_dockerhub_username>   --tag=<custom_tag>   --latest   run-comfyui-wan
 ```
-
-Note: If you want to push the image with the latest tag, add the --latest flag at the end.

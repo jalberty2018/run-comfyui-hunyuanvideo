@@ -1,6 +1,6 @@
 #!/bin/bash
-
-echo "[INFO] Pod run-comfyui-hunyuanvideo started"
+echo "ℹ️ Pod run-comfyui-hunyuanvideo started"
+echo "ℹ️ Wait until the message 🎉 Provisioning done, ready to create AI content 🎉. is displayed"
 
 # Enable SSH if PUBLIC_KEY is set
 if [[ -n "$PUBLIC_KEY" ]]; then
@@ -8,41 +8,124 @@ if [[ -n "$PUBLIC_KEY" ]]; then
     echo "$PUBLIC_KEY" >> ~/.ssh/authorized_keys
     chmod 600 ~/.ssh/authorized_keys
     service ssh start
+	echo "✅ [SSH enabled]"
 fi
 
 # Move necessary files to workspace
-for script in comfyui-on-workspace.sh provisioning-on-workspace.sh readme-on-workspace.sh; do
+echo "ℹ️ [Moving necessary files to workspace] enabling rebooting pod without data loss"
+for script in comfyui-on-workspace.sh provisioning-on-workspace.sh readme-on-workspace.sh test-on-workspace.sh; do
     if [ -f "/$script" ]; then
         echo "Executing $script..."
         "/$script"
     else
-        echo "Skipping $script (not found)"
+        echo "⚠️ WARNING: Skipping $script (not found)"
     fi
 done
 
 # Create output directory for cloud transfer
 mkdir -p /workspace/output/
 
-if [[ ${RUNPOD_GPU_COUNT:-0} -gt 0 ]]; then
-    # Start code-server (HTTP port 9000)
-    if [[ -n "$PASSWORD" ]]; then
-        code-server /workspace --auth password --disable-telemetry --host 0.0.0.0 --bind-addr 0.0.0.0:9000 &
-    else
-        echo "WARNING: PASSWORD is not set as an environment variable"
-        code-server /workspace --disable-telemetry --host 0.0.0.0 --bind-addr 0.0.0.0:9000 &
-    fi
+# Set optimalisations
+export PYTORCH_ALLOC_CONF=expandable_segments:True,garbage_collection_threshold:0.8
+export COMFYUI_VRAM_MODE=HIGH_VRAM
 
-    # Start ComfyUI (HTTP port 8188)
-    python3 /workspace/ComfyUI/main.py ${COMFYUI_EXTRA_ARGUMENTS:---listen} &
+# GPU detection
+echo "ℹ️ Testing GPU/CUDA provisioning"
+
+# GPU detection Runpod.io
+HAS_GPU_RUNPOD=0
+if [[ -n "${RUNPOD_GPU_COUNT:-}" && "${RUNPOD_GPU_COUNT:-0}" -gt 0 ]]; then
+  HAS_GPU_RUNPOD=1
+  echo "✅ [GPU DETECTED] Found via RUNPOD_GPU_COUNT=${RUNPOD_GPU_COUNT}"
 else
-    echo "WARNING: No GPU available, ComfyUI and code-server not started to limit memory use"
+  echo "⚠️ [NO GPU] No Runpod.io GPU detected."
+fi  
+
+# GPU detection nvidia-smi
+HAS_GPU=0
+if command -v nvidia-smi >/dev/null 2>&1; then
+  if nvidia-smi >/dev/null 2>&1; then
+    HAS_GPU=1
+    GPU_MODEL=$(nvidia-smi --query-gpu=name --format=csv,noheader | xargs | sed 's/,/, /g')
+    echo "✅ [GPU DETECTED] Found via nvidia-smi → Model(s): ${GPU_MODEL}"
+  else
+    echo "⚠️ [NO GPU] nvidia-smi found but failed to run (driver or permission issue)"
+  fi
+else
+  echo "⚠️ [NO GPU] No GPU found via nvidia-smi"
+fi
+
+# Start code-server (HTTP port 9000) 
+if [[ "$HAS_GPU" -eq 1 || "$HAS_GPU_RUNPOD" -eq 1 ]]; then    
+	    
+	echo "✅ Code-Server service starting"
+	
+	if [[ -n "$PASSWORD" ]]; then
+        code-server /workspace --auth password --disable-update-check --disable-telemetry --host 0.0.0.0 --bind-addr 0.0.0.0:9000 &
+    else
+        echo "⚠️ PASSWORD is not set as an environment variable use password in log file"
+        code-server /workspace --disable-telemetry --disable-update-check --host 0.0.0.0 --bind-addr 0.0.0.0:9000 &
+    fi
+	
+	echo "🎉 code-server service started"
+else
+    echo "⚠️ WARNING: No GPU available, Code Server not started to limit memory use"
 fi
 	
-# Login to Hugging Face if token is provided
-if [[ -n "$HF_TOKEN" ]]; then
-    huggingface-cli login --token "$HF_TOKEN"
+sleep 2
+
+# Python, Torch CUDA check
+HAS_CUDA=0
+if command -v python >/dev/null 2>&1; then
+  if python - << 'PY' >/dev/null 2>&1
+import sys
+try:
+    import torch
+    sys.exit(0 if torch.cuda.is_available() else 1)
+except Exception:
+    sys.exit(1)
+PY
+  then
+    HAS_CUDA=1
+  fi
 else
-	echo "WARNING: HF_TOKEN is not set as an environment variable"
+  echo "⚠️ Python not found – assuming no CUDA"
+fi
+
+# Start ComfyUI (HTTP port 8188)
+HAS_COMFYUI=0
+
+if [[ "$HAS_CUDA" -eq 1 ]]; then  	
+	
+    echo "✅ ComfyUI service starting (CUDA available)"
+	    
+    python3 /workspace/ComfyUI/main.py ${COMFYUI_EXTRA_ARGUMENTS:---listen --preview-method latent2rgb} &
+	
+    # Wait until ComfyUI is ready
+    MAX_TRIES=40
+    COUNT=0
+		
+    until curl -s http://127.0.0.1:8188 > /dev/null; do
+        COUNT=$((COUNT+1))
+
+        if [[ $COUNT -ge $MAX_TRIES ]]; then
+            echo "⚠️  WARNING: ComfyUI is still not responding after $MAX_TRIES attempts (~1 min)."
+            echo "⚠️  Continuing script anyway..."
+            break
+        fi
+
+        echo "ℹ️ Waiting for ComfyUI to come online... ($COUNT/$MAX_TRIES)"
+        sleep 5
+    done
+
+    # Success message only when ComfyUI responded
+    if curl -s http://127.0.0.1:8188 > /dev/null; then
+		HAS_COMFYUI=1
+        echo "🎉 ComfyUI is online!"
+    fi
+
+else
+    echo "❌ ERROR: PyTorch CUDA driver mismatch or unavailable, ComfyUI not started"
 fi
 
 # Function to download models if variables are set
@@ -50,50 +133,285 @@ download_model_HF() {
     local model_var="$1"
     local file_var="$2"
     local dest_dir="$3"
-
-    if [[ -n "${!model_var}" && -n "${!file_var}" ]]; then
-        huggingface-cli download "${!model_var}" "${!file_var}" --local-dir "/workspace/ComfyUI/models/$dest_dir/"
+	
+    if [[ -n "${!model_var}" && -n "${!file_var}" ]]; then		
+        local target="/workspace/ComfyUI/models/$dest_dir"
+        mkdir -p "$target"
+		echo "ℹ️ [DOWNLOAD] Fetching ${!model_var}/${!file_var} → $target"		
+        hf download "${!model_var}" "${!file_var}" --local-dir "$target" || \
+            echo "⚠️ Failed to download ${!model_var}/${!file_var}"
+        sleep 1
     fi
+
+    return 0
+}
+
+download_generic_HF() {
+    local model_var="$1"
+    local file_var="$2"
+    local dest_dir="$3"
+	
+    if [[ -n "${!model_var}" && -n "${!file_var}" ]]; then		
+        local target="/workspace/ComfyUI/$dest_dir"
+        mkdir -p "$target"
+		echo "ℹ️ [DOWNLOAD] Fetching ${!model_var}/${!file_var} → $target"		
+        hf download "${!model_var}" "${!file_var}" --local-dir "$target" || \
+            echo "⚠️ Failed to download ${!model_var}/${!file_var}"
+        sleep 1
+    fi
+
+    return 0
+}
+
+download_generic_full_HF() {
+    local model_var="$1"
+    local file_var="$2"
+    local dest_dir="$3"
+	
+    if [[ -n "${!model_var}" ]]; then		
+        local target="/workspace/ComfyUI/$dest_dir"
+        mkdir -p "$target"
+		echo "ℹ️ [DOWNLOAD] Fetching ${!model_var} → $target"		
+        hf download "${!model_var}" --local-dir "$target" || \
+            echo "⚠️ Failed to download ${!model_var}"
+        sleep 1
+    fi
+
+    return 0
 }
 
 download_model_CIVITAI() {
     local url_var="$1"
     local dest_dir="$2"
 
-    # Check if URL variable is set and not empty
     if [[ -z "${!url_var}" ]]; then
-        return 1
+        return 0
     fi
 
-    # Check if CIVITAI_TOKEN is set
     if [[ -z "$CIVITAI_TOKEN" ]]; then
-        echo "ERROR: CIVITAI_TOKEN is not set as an environment variable '$url_var' not downloaded"
+        echo "⚠️ ERROR: CIVITAI_TOKEN is not set as an environment variable '$url_var' not downloaded"
         return 1
     fi
 
-    # Run the civitai command
-    civitai "${!url_var}" "/workspace/ComfyUI/models/$dest_dir/"
+    local target="/workspace/ComfyUI/models/$dest_dir"
+    mkdir -p "$target"
+
+    echo "ℹ️ [DOWNLOAD] Fetching ${!url_var} → $target ..."			
+    civitai "${!url_var}" "$target" || \
+        echo "⚠️ Failed to download ${!url_var}"
+    sleep 1	
+    return 0
 }
 
-# Download Models and loras
-download_model_HF HF_MODEL_VAE HF_MODEL_VAE_SAFETENSORS "vae"
-download_model_HF HF_MODEL_UPSCALER1 HF_MODEL_UPSCALER_PTH1 "upscale_models"
-download_model_HF HF_MODEL_UPSCALER2 HF_MODEL_UPSCALER_PTH2 "upscale_models"
-download_model_HF HF_MODEL_TEXT_ENCODERS1 HF_MODEL_TEXT_ENCODERS_SAFETENSORS1 "text_encoders"
-download_model_HF HF_MODEL_TEXT_ENCODERS2 HF_MODEL_TEXT_ENCODERS_SAFETENSORS2 "text_encoders"
-download_model_HF HF_MODEL_LORA1 HF_MODEL_LORA_SAFETENSORS1 "loras"
-download_model_HF HF_MODEL_LORA2 HF_MODEL_LORA_SAFETENSORS2 "loras"
-download_model_HF HF_MODEL_LORA3 HF_MODEL_LORA_SAFETENSORS3 "loras"
-download_model_HF HF_MODEL_LORA4 HF_MODEL_LORA_SAFETENSORS4 "loras"
-download_model_CIVITAI CIVITAI_MODEL_LORA_URL1 "loras"
-download_model_CIVITAI CIVITAI_MODEL_LORA_URL2 "loras"
-download_model_CIVITAI CIVITAI_MODEL_LORA_URL3 "loras"
-download_model_CIVITAI CIVITAI_MODEL_LORA_URL4 "loras"
-download_model_HF HF_MODEL_DIFFUSION_MODELS HF_MODEL_DIFFUSION_MODELS_SAFETENSORS "diffusion_models"
-download_model_HF HF_MODEL_CHECKPOINTS HF_MODEL_CHECKPOINTS_SAFETENSORS "checkpoints"
+download_workflow() {
+    local url_var="$1"
 
-# Final message
-echo "[INFO] Provisioning done end"
+    # Check if URL variable is set and not empty
+    if [[ -z "${!url_var}" ]]; then
+        return 0
+    fi
+
+    # Destination directory
+    local dest_dir="/workspace/ComfyUI/user/default/workflows/"
+    mkdir -p "$dest_dir"
+
+    # Get filename from URL
+    local url="${!url_var}"
+    local filename
+    filename=$(basename "$url")
+    local filepath="${dest_dir}${filename}"
+
+    # Skip entire process if file already exists
+    if [[ -f "$filepath" ]]; then
+        echo "⏭️  [SKIP] $filename already exists — skipping download and extraction"
+        return 0
+    fi
+
+    # Download file
+    echo "ℹ️ [DOWNLOAD] Fetching $filename ..."
+    if wget -q -P "$dest_dir" "$url"; then
+        echo "[DONE] Downloaded $filename"
+    else
+        echo "⚠️  Failed to download $url"
+        return 0
+    fi
+
+    # Automatically extract common archive formats
+    case "$filename" in
+        *.zip)
+            echo "📦  [EXTRACT] Unzipping $filename ..."
+            if unzip -o "$filepath" -d "$dest_dir" >/dev/null 2>&1; then
+                echo "[DONE] Extracted $filename"
+            else
+                echo "⚠️  Failed to unzip $filename"
+            fi
+            ;;
+        *.tar.gz|*.tgz)
+            echo "📦  [EXTRACT] Extracting $filename (tar.gz) ..."
+            if tar -xzf "$filepath" -C "$dest_dir"; then
+                echo "[DONE] Extracted $filename"
+            else
+                echo "⚠️  Failed to extract $filename"
+            fi
+            ;;
+        *.tar.xz)
+            echo "📦  [EXTRACT] Extracting $filename (tar.xz) ..."
+            if tar -xJf "$filepath" -C "$dest_dir"; then
+                echo "[DONE] Extracted $filename"
+            else
+                echo "⚠️  Failed to extract $filename"
+            fi
+            ;;
+        *.tar.bz2)
+            echo "📦  [EXTRACT] Extracting $filename (tar.bz2) ..."
+            if tar -xjf "$filepath" -C "$dest_dir"; then
+                echo "[DONE] Extracted $filename"
+            else
+                echo "⚠️  Failed to extract $filename"
+            fi
+            ;;
+        *.7z)
+            echo "📦  [EXTRACT] Extracting $filename (7z) ..."
+            if 7z x -y -o"$dest_dir" "$filepath" >/dev/null 2>&1; then
+                echo "[DONE] Extracted $filename"
+            else
+                echo "⚠️  Failed to extract $filename"
+            fi
+            ;;
+        *)
+            echo "[INFO] No extraction needed for $filename"
+            ;;
+    esac
+
+    sleep 1
+    return 0
+}
+
+# Provisioning if comfyUI is responding running on GPU with CUDA
+
+if [[ "$HAS_COMFYUI" -eq 1  ]]; then  
+	# provisioning workflows
+	echo "📥 Provisioning workflows"
+	
+	for i in $(seq 1 50); do
+	    VAR="WORKFLOW${i}"
+	    download_workflow "$VAR"
+	done
+	
+	# provisioning Models and loras
+	echo "📥 Provisioning models HF"
+	
+	# categorie:  NAME:SUFFIX:MAP
+	CATEGORIES_HF=(
+	  "VAE:VAE_FILENAME:vae"
+	  "UPSCALER:UPSCALER_PTH:upscale_models"
+	  "LORA:LORA_FILENAME:loras"
+	  "TEXT_ENCODERS:TEXT_ENCODERS_FILENAME:text_encoders"
+	  "CLIP_VISION:CLIP_VISION_FILENAME:clip_vision"
+	  "PATCHES:PATCHES_FILENAME:model_patches"
+	  "AUDIO_ENCODERS:AUDIO_ENCODERS_FILENAME:audio_encoders"
+	  "DIFFUSION_MODELS:DIFFUSION_MODELS_FILENAME:diffusion_models"
+	  "CHECKPOINTS:CHECKPOINTS_FILENAME:checkpoints"
+	  "VL:VL_FILENAME:VLM"
+	  "SAMS:SAMS_FILENAME:sams"
+	)
+	
+	for cat in "${CATEGORIES_HF[@]}"; do
+	  IFS=":" read -r NAME SUFFIX DIR <<< "$cat"
+	
+	  for i in $(seq 1 20); do
+	    VAR1="HF_MODEL_${NAME}${i}"
+	    VAR2="HF_MODEL_${SUFFIX}${i}"
+	
+	    download_model_HF "$VAR1" "$VAR2" "$DIR"
+	  done
+	done
+	
+	# Huggingface download file to specified directory
+	
+	for i in $(seq 1 20); do
+	    VAR1="HF_MODEL${i}"
+	    VAR2="HF_MODEL_FILENAME${i}"
+	    DIR="HF_MODEL_DIR${i}"
+	    download_generic_HF "$VAR1" "$VAR2" "$DIR"
+	done
+	
+	# Huggingface download full model to specified directory
+	  
+	for i in $(seq 1 20); do
+	    VAR="HF_FULL_MODEL${i}"
+	    DIR="HF_FULL_MODEL_DIR${i}"
+	    download_generic_full_HF "$VAR" "$DIR"
+	done  
+	 
+	# provisioning Models and loras
+	echo "📥 Provisioning models CIVITAI"
+	
+	# categorie: NAME:MAP	
+	CATEGORIES_CIVITAI=(
+       "LORA_URL:loras"
+    )
+
+	for cat in "${CATEGORIES_CIVITAI[@]}"; do
+	  IFS=":" read -r NAME DIR <<< "$cat"
+	
+	  for i in $(seq 1 50); do
+	    VAR1="CIVITAI_MODEL_${NAME}${i}"
+	    download_model_CIVITAI "$VAR1" "$DIR"
+	  done
+	done
+	
+	HAS_PROVISIONING=1
+else
+    HAS_PROVISIONING=0   
+	echo "⚠️ Skipped Provisioning: No workflows or models downloaded as ComfyUI is not online"	
+fi
+
+# Environment
+echo "ℹ️ Running environment"
+
+python - <<'PY'
+import torch, platform, triton, os, onnxruntime as ort
+print(f"Python: {platform.python_version()}")
+print(f"PyTorch: {torch.__version__}")
+print(f"Triton version: {triton.__version__}")
+print(f"ONNX Runtime version: {ort.__version__}")
+print(f"Available providers: {ort.get_available_providers()}")
+print(f"CUDA provider available: { 'CUDAExecutionProvider' in ort.get_available_providers()}")
+print(f"CUDA available: {torch.cuda.is_available()}")
+if torch.cuda.is_available():
+    print(f"  ↳ CUDA runtime: {torch.version.cuda}")
+    print(f"  ↳ GPU(s): {[torch.cuda.get_device_name(i) for i in range(torch.cuda.device_count())]}")
+    print(f"  ↳ cuDNN: {torch.backends.cudnn.version()}")
+    print(f"Torch build info: {torch.__config__.show()}")
+PY
+
+if [[ "$HAS_PROVISIONING" -eq 1 ]]; then 
+    echo "🎉 Provisioning done, ready to create AI content 🎉"
+    
+    if [[ "$HAS_GPU_RUNPOD" -eq 1 ]]; then
+        echo "ℹ️ Connect to ComfyUI, Code-Server or shell from console menu on runpod.io"
+    fi
+else
+    echo "ℹ️ Running error diagnosis"
+
+    if [[ "$HAS_GPU_RUNPOD" -eq 0 ]]; then
+        echo "⚠️ Pod started without a runpod.io GPU"
+    fi
+
+    if [[ "$HAS_CUDA" -eq 0 ]]; then
+        echo "❌ Pytorch CUDA driver error/mismatch/not available"
+        if [[ "$HAS_GPU_RUNPOD" -eq 1 ]]; then
+            echo "⚠️ [SOLUTION] Deploy pod on another region ⚠️"
+        fi
+    fi
+
+    if [[ "$HAS_CUDA" -eq 1 && "$HAS_COMFYUI" -eq 0 ]]; then
+        echo "❌ ComfyUI is not online"
+        echo "⚠️ [SOLUTION] restart pod ⚠️"
+    fi
+fi
 
 # Keep the container running
+echo "ℹ️ End script"
 exec sleep infinity
