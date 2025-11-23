@@ -2,6 +2,8 @@
 
 ## Information
 
+- [Configurations](https://awesome-comfyui.rozenlaan.site/ComfyUI_HY/)
+
 ## Workflows
 
 - Open from ComfyUI's interface on the left
@@ -10,6 +12,7 @@
 ## Installed custom nodes
 
 - Open ComfyUI manager installed custom nodes.
+- Included in latest image [custom_nodes](https://awesome-comfyui.rozenlaan.site/ComfyUI_HY_custom_nodes/)
 
 ### Manual provisioning
 
@@ -21,7 +24,7 @@
 
 - [t2v](provisioning/hf_hy15_t2v.md)
 - [i2v](provisioning/hf_hy15_i2v.md)
-- [sr](provisioning/hf_hy_sr.md)
+- [sr](provisioning/hf_hy15_sr.md)
 
 ### Others
 

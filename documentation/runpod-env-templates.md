@@ -1,6 +1,6 @@
 # Environment variables for templates
 
-## t2v Hunyuanvideo 1.5
+## t2v Hunyuan video 1.5
 
 ### Public
 
@@ -15,7 +15,7 @@ HF_MODEL_TEXT_ENCODERS2=Comfy-Org/HunyuanVideo_1.5_repackaged
 HF_MODEL_TEXT_ENCODERS_FILENAME2=split_files/text_encoders/qwen_2.5_vl_7b.safetensors
 HF_MODEL_UPSCALER1=LS110824/upscale
 HF_MODEL_UPSCALER_PTH1=4x_foolhardy_Remacri.pth
-WORKFLOW1=https://awesome-comfyui.rozenlaan.site/pod/hy/HY15_t2v_pod.json
+WORKFLOW1=https://awesome-comfyui.rozenlaan.site/pod/hy/HY15-t2v-KSampler-pod.json
 ```
 
 ### Private
@@ -34,10 +34,10 @@ HF_MODEL_TEXT_ENCODERS2=Comfy-Org/HunyuanVideo_1.5_repackaged
 HF_MODEL_TEXT_ENCODERS_FILENAME2=split_files/text_encoders/qwen_2.5_vl_7b.safetensors
 HF_MODEL_UPSCALER1=LS110824/upscale
 HF_MODEL_UPSCALER_PTH1=4x_foolhardy_Remacri.pth
-WORKFLOW1=https://awesome-comfyui.rozenlaan.site/pod/hy/HY15_t2v_pod.json
+WORKFLOW1=https://awesome-comfyui.rozenlaan.site/pod/hy/HY15-t2v-KSampler-pod.json
 ```
 
-## ## i2v Hunyuanvideo 1.5
+## ## i2v Hunyuan video 1.5
 
 ### Public
 
@@ -56,7 +56,7 @@ HF_MODEL_UPSCALER1=LS110824/upscale
 HF_MODEL_UPSCALER_PTH1=4x_foolhardy_Remacri.pth
 HF_MODEL_SAMS1=VeryAladeen/Sec-4B
 HF_MODEL_SAMS_FILENAME1=SeC-4B-fp16.safetensors
-WORKFLOW1=https://awesome-comfyui.rozenlaan.site/pod/hy/HY15_i2v_pod.json
+WORKFLOW1=https://awesome-comfyui.rozenlaan.site/pod/hy/HY15-i2v-KSampler-pod.json
 ```
 
 ### Private
@@ -79,5 +79,5 @@ HF_MODEL_UPSCALER1=LS110824/upscale
 HF_MODEL_UPSCALER_PTH1=4x_foolhardy_Remacri.pth
 HF_MODEL_SAMS1=VeryAladeen/Sec-4B
 HF_MODEL_SAMS_FILENAME1=SeC-4B-fp16.safetensors
-WORKFLOW1=https://awesome-comfyui.rozenlaan.site/pod/hy/HY15_i2v_pod.json
+WORKFLOW1=https://awesome-comfyui.rozenlaan.site/pod/hy/HY15-i2v-KSampler-pod.json
 ```

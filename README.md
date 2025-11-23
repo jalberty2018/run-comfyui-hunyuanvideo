@@ -1,4 +1,4 @@
-# 🚀 Run Hunyuanvideo 1.x with ComfyUI with provisioning — [RunPod.io Deployment](https://runpod.io?ref=se4tkc5o)
+# 🚀 Run Hunyuan Video 1.x with ComfyUI with provisioning — [RunPod.io Deployment](https://runpod.io?ref=se4tkc5o)
 
 [![Docker Image Version](https://img.shields.io/docker/v/ls250824/run-comfyui-hunyuanvideo)](https://hub.docker.com/r/ls250824/run-comfyui-hunyuanvideo)
 
@@ -29,8 +29,8 @@ A streamlined and automated environment for running **ComfyUI** with **Hunyuanvi
 
 **One-Click Deployment links:**
 
-- 👉 [RunPod Hunyuanvideo 1.5 T2V](https://console.runpod.io/deploy?template=0rj9nvbx7n&ref=se4tkc5o)
-- 👉 [RunPod Hunyuanvideo 1.5 I2V](https://console.runpod.io/deploy?template=4jsbo737uq&ref=se4tkc5o)
+- 👉 [RunPod Hunyuan video 1.5 T2V](https://console.runpod.io/deploy?template=0rj9nvbx7n&ref=se4tkc5o)
+- 👉 [RunPod Hunyuan video 1.5 I2V](https://console.runpod.io/deploy?template=4jsbo737uq&ref=se4tkc5o)
 
 ### Workflows
 
@@ -197,7 +197,7 @@ docker pull ls250824/run-comfyui-hunyuanvideo:<version>
 
 - [t2v](provisioning/hf_hy15_t2v.md)
 - [i2v](provisioning/hf_hy15_i2v.md)
-- [sr](provisioning/hf_hy_sr.md)
+- [sr](provisioning/hf_hy15_sr.md)
 
 ### Others
 

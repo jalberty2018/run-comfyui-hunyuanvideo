@@ -1,4 +1,4 @@
-# Run Hunyuanvideo 1.x inference with ComfyUI and provisioning.
+# Run Hunyuan Video 1.x inference with ComfyUI and provisioning.
 
 ## Features
 
@@ -29,8 +29,8 @@
 
 **One-Click Deployment links:**
 
-- 👉 [RunPod Hunyuanvideo 1.5 T2V](https://console.runpod.io/deploy?template=0rj9nvbx7n&ref=se4tkc5o)
-- 👉 [RunPod Hunyuanvideo 1.5 I2V](https://console.runpod.io/deploy?template=4jsbo737uq&ref=se4tkc5o)
+- 👉 [RunPod Hunyuan Video 1.5 T2V](https://console.runpod.io/deploy?template=0rj9nvbx7n&ref=se4tkc5o)
+- 👉 [RunPod Hunyuan Video 1.5 I2V](https://console.runpod.io/deploy?template=4jsbo737uq&ref=se4tkc5o)
 
 ### Workflows
 

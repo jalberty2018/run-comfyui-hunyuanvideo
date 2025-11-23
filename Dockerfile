@@ -74,7 +74,7 @@ WORKDIR /workspace
 EXPOSE 8188 9000
 
 # Labels
-LABEL org.opencontainers.image.title="ComfyUI 0.3.71 with custom_nodes for Hunyuanvideo 1.x inference" \
+LABEL org.opencontainers.image.title="ComfyUI 0.3.71 with custom_nodes for Hunyuan Video 1.x inference" \
       org.opencontainers.image.description="ComfyUI  + flash-attn + sageattention + onnxruntime-gpu + code-server + civitai downloader + huggingface_hub + custom_nodes" \
       org.opencontainers.image.source="https://hub.docker.com/r/ls250824/run-comfyui-wan" \
       org.opencontainers.image.licenses="MIT"
