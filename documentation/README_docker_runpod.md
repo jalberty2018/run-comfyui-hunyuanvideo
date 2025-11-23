@@ -51,15 +51,15 @@
 - **Precision:** fp16  
 - **Video settings:** 1024×768, 100 frames
 
-| GPU | VRAM | RAM (Native |
+| GPU | VRAM | RAM (Native) |
 |------|-------|------------------------|
-| L40S, RTX 6000 Ada, L40, A40 | 45 GB | 50 GB |
+| L40S, RTX 6000 Ada, L40, A40 | 45 GB | 45 GB |
 
 ### Storage Requirements
 
 | Component | Minimum |
 |-----------|---------|
-| Volume Storage | 50 GB |
+| Volume Storage | 70 GB |
 | Pod Storage | 15 GB |
 
 ### **ComfyUI Arguments**  
