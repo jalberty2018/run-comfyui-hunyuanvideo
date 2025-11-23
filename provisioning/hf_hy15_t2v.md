@@ -1,7 +1,6 @@
 # Manual provisioning Hunyuanvideo 1.5 t2v
 
 - [ComfyUI](https://huggingface.co/Comfy-Org/HunyuanVideo_1.5_repackaged/tree/main/split_files)
-- [Lightning lightx2v](https://huggingface.co/lightx2v/Hy1.5-Quantized-Models/tree/main)
 
 ## Diffusion_models
 

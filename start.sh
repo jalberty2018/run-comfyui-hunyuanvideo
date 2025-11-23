@@ -63,7 +63,7 @@ if [[ "$HAS_GPU" -eq 1 || "$HAS_GPU_RUNPOD" -eq 1 ]]; then
 	if [[ -n "$PASSWORD" ]]; then
         code-server /workspace --auth password --disable-update-check --disable-telemetry --host 0.0.0.0 --bind-addr 0.0.0.0:9000 &
     else
-        echo "⚠️ PASSWORD is not set as an environment variable use password in log file"
+        echo "⚠️ PASSWORD is not set as an environment variable use password from /root/.config/code-server/config.yaml"
         code-server /workspace --disable-telemetry --disable-update-check --host 0.0.0.0 --bind-addr 0.0.0.0:9000 &
     fi
 	
@@ -150,33 +150,26 @@ download_generic_HF() {
     local model_var="$1"
     local file_var="$2"
     local dest_dir="$3"
-	
-    if [[ -n "${!model_var}" && -n "${!file_var}" ]]; then		
-        local target="/workspace/ComfyUI/$dest_dir"
-        mkdir -p "$target"
-		echo "ℹ️ [DOWNLOAD] Fetching ${!model_var}/${!file_var} → $target"		
-        hf download "${!model_var}" "${!file_var}" --local-dir "$target" || \
-            echo "⚠️ Failed to download ${!model_var}/${!file_var}"
-        sleep 1
+
+    local model="${!model_var}"
+    local file="${!file_var}"
+
+    [[ -z "$model" ]] && return 0
+
+    local target="/workspace/ComfyUI/$dest_dir"
+    mkdir -p "$target"
+
+    if [[ -n "$file" ]]; then
+        echo "ℹ️ [DOWNLOAD] Fetching $model/$file → $target"
+        hf download "$model" "$file" --local-dir "$target" || \
+            echo "⚠️ Failed to download $model/$file"
+    else
+        echo "ℹ️ [DOWNLOAD] Fetching $model → $target"
+        hf download "$model" --local-dir "$target" || \
+            echo "⚠️ Failed to download $model"
     fi
 
-    return 0
-}
-
-download_generic_full_HF() {
-    local model_var="$1"
-    local file_var="$2"
-    local dest_dir="$3"
-	
-    if [[ -n "${!model_var}" ]]; then		
-        local target="/workspace/ComfyUI/$dest_dir"
-        mkdir -p "$target"
-		echo "ℹ️ [DOWNLOAD] Fetching ${!model_var} → $target"		
-        hf download "${!model_var}" --local-dir "$target" || \
-            echo "⚠️ Failed to download ${!model_var}"
-        sleep 1
-    fi
-
+    sleep 1
     return 0
 }
 
@@ -314,6 +307,7 @@ if [[ "$HAS_COMFYUI" -eq 1  ]]; then
 	  "CHECKPOINTS:CHECKPOINTS_FILENAME:checkpoints"
 	  "VL:VL_FILENAME:VLM"
 	  "SAMS:SAMS_FILENAME:sams"
+	  "LATENT_UPSCALE:LATENT_UPSCALE_FILENAME:latent_upscale_models"
 	)
 	
 	for cat in "${CATEGORIES_HF[@]}"; do
@@ -330,18 +324,18 @@ if [[ "$HAS_COMFYUI" -eq 1  ]]; then
 	# Huggingface download file to specified directory
 	
 	for i in $(seq 1 20); do
-	    VAR1="HF_MODEL${i}"
-	    VAR2="HF_MODEL_FILENAME${i}"
-	    DIR="HF_MODEL_DIR${i}"
-	    download_generic_HF "$VAR1" "$VAR2" "$DIR"
-	done
+        VAR1="HF_MODEL${i}"
+        VAR2="HF_MODEL_FILENAME${i}"
+        DIR_VAR="HF_MODEL_DIR${i}"
+        download_generic_HF "${VAR1}" "${VAR2}" "${!DIR_VAR}"
+    done
 	
 	# Huggingface download full model to specified directory
 	  
 	for i in $(seq 1 20); do
-	    VAR="HF_FULL_MODEL${i}"
-	    DIR="HF_FULL_MODEL_DIR${i}"
-	    download_generic_full_HF "$VAR" "$DIR"
+	    VAR1="HF_FULL_MODEL${i}"
+	    DIR_VAR="HF_MODEL_DIR${i}"
+        download_generic_HF "${VAR1}" "" "${!DIR_VAR}"
 	done  
 	 
 	# provisioning Models and loras

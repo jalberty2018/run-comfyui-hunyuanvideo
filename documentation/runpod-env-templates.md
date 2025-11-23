@@ -15,6 +15,10 @@ HF_MODEL_TEXT_ENCODERS2=Comfy-Org/HunyuanVideo_1.5_repackaged
 HF_MODEL_TEXT_ENCODERS_FILENAME2=split_files/text_encoders/qwen_2.5_vl_7b.safetensors
 HF_MODEL_UPSCALER1=LS110824/upscale
 HF_MODEL_UPSCALER_PTH1=4x_foolhardy_Remacri.pth
+HF_MODEL_DIFFUSION_MODELS2=Comfy-Org/HunyuanVideo_1.5_repackaged
+HF_MODEL_DIFFUSION_MODELS_FILENAME2=split_files/diffusion_models/hunyuanvideo1.5_1080p_sr_distilled_fp16.safetensors
+HF_MODEL_LATENT_UPSCALE1=Comfy-Org/HunyuanVideo_1.5_repackaged
+HF_MODEL_LATENT_UPSCALE_FILENAME1=split_files/latent_upscale_models/hunyuanvideo15_latent_upsampler_1080p.safetensors
 WORKFLOW1=https://awesome-comfyui.rozenlaan.site/pod/hy/HY15-t2v-KSampler-pod.json
 ```
 
@@ -56,6 +60,10 @@ HF_MODEL_UPSCALER1=LS110824/upscale
 HF_MODEL_UPSCALER_PTH1=4x_foolhardy_Remacri.pth
 HF_MODEL_SAMS1=VeryAladeen/Sec-4B
 HF_MODEL_SAMS_FILENAME1=SeC-4B-fp16.safetensors
+HF_MODEL_DIFFUSION_MODELS2=Comfy-Org/HunyuanVideo_1.5_repackaged
+HF_MODEL_DIFFUSION_MODELS_FILENAME2=split_files/diffusion_models/hunyuanvideo1.5_1080p_sr_distilled_fp16.safetensors
+HF_MODEL_LATENT_UPSCALE1=Comfy-Org/HunyuanVideo_1.5_repackaged
+HF_MODEL_LATENT_UPSCALE_FILENAME1=split_files/latent_upscale_models/hunyuanvideo15_latent_upsampler_1080p.safetensors
 WORKFLOW1=https://awesome-comfyui.rozenlaan.site/pod/hy/HY15-i2v-KSampler-pod.json
 ```
 

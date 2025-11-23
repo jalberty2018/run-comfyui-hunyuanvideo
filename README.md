@@ -17,7 +17,7 @@ A streamlined and automated environment for running **ComfyUI** with **Hunyuanvi
 - Supports advanced workflows for **video generation** and **enhancement** using pre-installed custom nodes.
 - Compatible with high-performance NVIDIA GPUs.
 
-## Template Deployment
+## 🧩 Template Deployment
 
 ### Deployment & Tutorial.
 
@@ -103,6 +103,7 @@ docker pull ls250824/run-comfyui-hunyuanvideo:<version>
 | Loras          | `HF_MODEL_LORA[1-20]`          | `HF_MODEL_LORA_FILENAME[1-20]`          |
 | VLM/mmproj    | `HF_MODEL_VL[1-20]`          | `HF_MODEL_VL_FILENAME[1-20]`          |
 | SAM segmentation | `HF_MODEL_SAMS[1-20]`          | `HF_MODEL_SAMS_FILENAME[1-20]`          |
+| Latent Upscale  | `HF_MODEL_LATENT_UPSCALE[1-20]` | `HF_MODEL_LATENT_UPSCALE_FILENAME[1-20]` |
 
 ### Huggingface model configuration
 
@@ -135,6 +136,7 @@ docker pull ls250824/run-comfyui-hunyuanvideo:<version>
 ## 📚 Tutorials & Resources
 
 - [Hunyuanvideo 1.5 Github](https://github.com/Tencent-Hunyuan/HunyuanVideo-1.5)
+- [ComfyUI workflow](https://docs.comfy.org/tutorials/video/hunyuan/hunyuan-video-1-5)
 
 ## 🧩 Pre-Installed Custom Nodes
 
